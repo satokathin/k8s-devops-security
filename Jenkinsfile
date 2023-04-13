@@ -21,7 +21,6 @@ pipeline {
                       sourcePattern: '**/src/main'
                   )
                     junit 'target/surefire-reports/*.xml',
-              }
         }   
     }
 }
