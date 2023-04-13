@@ -15,12 +15,13 @@ pipeline {
             }
             post {
               alwasys {
-                  jacoco(
+                junit 'target/surefire-reports/*.xml'
+                jacoco(
                       execPattern: '**/build/jacoco/*.exec',
                       classPattern: '**/build/classes/java/main',
                       sourcePattern: '**/src/main'
                   )
-                    junit 'target/surefire-reports/*.xml',
+              }      
         }   
     }
 }
