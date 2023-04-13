@@ -9,19 +9,20 @@ pipeline {
             }
         }   
     
-      stage('Unit Tests') {
+      stage('Unit Tests - JUnit and Jacoco') {
             steps {
               sh "mvn test"
             }
             post {
-              alwasys {
+              always {
                 junit 'target/surefire-reports/*.xml'
                 jacoco(
                       execPattern: '**/build/jacoco/*.exec',
                       classPattern: '**/build/classes/java/main',
                       sourcePattern: '**/src/main'
                   )
-              }      
-        }   
+                }
+              }
+        }
     }
 }
