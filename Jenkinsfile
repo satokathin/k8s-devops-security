@@ -27,12 +27,17 @@ pipeline {
               }
         }
 		
-		stage('Docker') {
+	stage('Docker') {
             steps {
               sh "docker build -t devsato/numeric-app:${env.BUILD_ID} ."
-			        //sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			        //sh 'docker push devsato/numeric-app'
+	      sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+	      sh "docker push devsato/numeric-app:${env.BUILD_ID}"
             }
+		post {
+			always {
+				sh 'docker logout'
+			}
+		}
         }
     }
 }
