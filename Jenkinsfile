@@ -1,5 +1,9 @@
 pipeline {
   agent any
+  
+  environment {
+      DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+  }
 
   stages {
       stage('Build Artifact') {
@@ -21,6 +25,14 @@ pipeline {
                   )
                 }
               }
+        }
+		
+		stage('Docker') {
+            steps {
+              sh "docker build -t devsato/numeric-app:${env.BUILD_ID} ."
+			        //sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			        //sh 'docker push devsato/numeric-app'
+            }
         }
     }
 }
