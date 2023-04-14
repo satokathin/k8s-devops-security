@@ -27,7 +27,7 @@ pipeline {
               }
         }
 		
-	stage('Docker') {
+	stage('Docker build and push') {
             steps {
               sh "docker build -t devsato/numeric-app:${env.BUILD_ID} ."
 	      sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
@@ -38,6 +38,24 @@ pipeline {
 				sh 'docker logout'
 			}
 		}
+        }
+	  
+	 stage('K8 NumericApp deployment') {
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+			sh "sed -i s#replace#devsato/numeric-app:${env.BUILD_ID}#g k8s_deployment_service.yaml"
+                	sh "kubectl apply -f k8s_deployment_service.yaml"
+                }
+            }
+        }
+	  
+	stage('K8 nodeService Deployment') {
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+			sh 'kubectl create deploy node-app --image siddharth67/node-service:v1'
+                	sh "kubectl expose deploy node-app --name node-service --port 5000 --type ClusterIP"
+                }
+            }
         }
     }
 }
